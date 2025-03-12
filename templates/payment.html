@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecurePay Gateway</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #2d3748;
+    }
+    
+    .payment-container {
+      width: 100%;
+      max-width: 1000px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      margin: 20px;
+    }
+    
+    .payment-header {
+      background: linear-gradient(135deg, #2a3990 0%, #1f2b70 100%);
+      color: white;
+      padding: 22px 30px;
+      position: relative;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-icon {
+      font-size: 26px;
+    }
+    
+    .logo h2 {
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    
+    .secure-badge {
+      position: absolute;
+      top: 22px;
+      right: 30px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+    
+    .secure-badge span {
+      margin-left: 5px;
+    }
+    
+    .payment-content {
+      display: flex;
+      flex-direction: row;
+    }
+    
+    @media (max-width: 820px) {
+      .payment-content {
+        flex-direction: column;
+      }
+      
+      .order-summary {
+        border-right: none !important;
+        border-bottom: 1px solid #e2e8f0;
+      }
+    }
+    
+    .order-summary {
+      flex: 5;
+      padding: 30px;
+      border-right: 1px solid #e2e8f0;
+      background-color: #fafbfc;
+    }
+    
+    .payment-form {
+      flex: 6;
+      padding: 30px;
+    }
+    
+    .form-row {
+      margin-bottom: 22px;
+    }
+    
+    .form-row label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #4a5568;
+      font-weight: 500;
+    }
+    
+    .form-row input, .form-row select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: all 0.2s;
+      background-color: #f8fafc;
+    }
+    
+    .form-row input:focus, .form-row select:focus {
+      border-color: #2a3990;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(42, 57, 144, 0.15);
+      background-color: #fff;
+    }
+    
+    .card-details {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .card-number {
+      flex: 2;
+    }
+    
+    .card-expiry, .card-cvc {
+      flex: 1;
+    }
+    
+    .payment-methods {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+    
+    .payment-method {
+      padding: 12px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      opacity: 0.7;
+      transition: all 0.2s;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .payment-method.active {
+      border-color: #2a3990;
+      background-color: #f0f5ff;
+      opacity: 1;
+    }
+    
+    .payment-method.active:before {
+      content: "✓";
+      color: #2a3990;
+      margin-right: 5px;
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, #2a3990 0%, #1f2b70 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+      box-shadow: 0 4px 6px rgba(42, 57, 144, 0.12);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn:hover {
+      background: linear-gradient(135deg, #243180 0%, #1a245e 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 8px rgba(42, 57, 144, 0.15);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 18px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 13px;
+      color: #718096;
+      background-color: #fafbfc;
+    }
+    
+    .footer span {
+      margin: 0 6px;
+    }
+    
+    .pci-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #718096;
+      background-color: #f8fafc;
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    .card-icons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 30px;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .visa {
+      color: #1434CB;
+    }
+
+    .mastercard {
+      color: #EB001B;
+    }
+
+    .amex {
+      color: #006FCF;
+    }
+
+    .rupay {
+      color: #097B3F;
+    }
+
+    .order-details {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      background-color: #fff;
+    }
+
+    .order-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 14px;
+      padding: 4px 0;
+    }
+
+    .order-row.total {
+      border-top: 1px solid #e2e8f0;
+      margin-top: 12px;
+      padding-top: 12px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #2d3748;
+    }
+
+    .lock-icon {
+      color: #4CAF50;
+    }
+    
+    .duration-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .duration-btn {
+      width: 36px;
+      height: 36px;
+      background-color: #f0f5ff;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+    }
+    
+    .duration-btn:hover {
+      background-color: #e2e8f0;
+    }
+    
+    .duration-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .duration-value {
+      font-size: 16px;
+      font-weight: 500;
+      min-width: 30px;
+      text-align: center;
+      color: #2d3748;
+    }
+    
+    .duration-unit {
+      font-size: 14px;
+      color: #718096;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .duration-toggle {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .duration-option {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+      position: relative;
+    }
+    
+    .duration-option.active {
+      border-color: #2a3990;
+      background-color: #f0f5ff;
+      font-weight: 500;
+    }
+    
+    .savings-badge {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      font-weight: 500;
+    }
+
+    .summary-title {
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #2d3748;
+      font-size: 22px;
+      font-weight: 600;
+    }
+    
+    .payment-title {
+      margin-top: 0;
+      margin-bottom: 25px;
+      color: #2d3748;
+      font-size: 22px;
+      font-weight: 600;
+    }
+    
+    .order-item-name {
+      font-weight: 600;
+      color: #2d3748;
+    }
+    
+    .discount-tag {
+      display: inline-block;
+      background-color: #f0f5ff;
+      color: #2a3990;
+      font-weight: 500;
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    
+    .info-icon {
+      color: #a0aec0;
+      font-size: 16px;
+      cursor: help;
+    }
+    
+    .return-date-box {
+      background-color: #f0f5ff;
+      border: 1px dashed #2a3990;
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .return-date-label {
+      color: #718096;
+    }
+    
+    .return-date-value {
+      font-weight: 500;
+      color: #2d3748;
+    }
+    
+    .card-security-icon {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      color: #a0aec0;
+    }
+    
+    .card-input-wrapper {
+      position: relative;
+    }
+    
+    .payment-method-icon {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="payment-container">
+    <div class="payment-header">
+      <div class="logo">
+        <span class="logo-icon">🔐</span>
+        <h2>SecurePay Gateway</h2>
+      </div>
+      <div class="secure-badge">
+        <span>🔒</span>
+        <span>Secure Connection</span>
+      </div>
+    </div>
+
+    <div class="payment-content">
+      <!-- Left Side: Order Summary -->
+      <div class="order-summary">
+        <h2 class="summary-title">Order Summary</h2>
+        <div class="order-details">
+          <div class="order-row">
+            <span>Item:</span>
+            <span id="itemName" class="order-item-name">Loading...</span>
+          </div>
+          <div class="order-row">
+            <span>Price per day:</span>
+            <span>₹<span id="itemPrice">0</span></span>
+          </div>
+          
+          <div class="form-row" style="margin-bottom: 15px;">
+            <label for="durationOption">Choose rental package:</label>
+            <div class="duration-toggle">
+              <div class="duration-option active" data-days="1" data-discount="0">
+                Daily
+              </div>
+              <div class="duration-option" data-days="7" data-discount="5">
+                Weekly
+                <span class="savings-badge">5% off</span>
+              </div>
+              <div class="duration-option" data-days="30" data-discount="15">
+                Monthly
+                <span class="savings-badge">15% off</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="order-row">
+            <span>Rental Duration:</span>
+            <div class="duration-controls">
+              <div class="duration-btn decrease">-</div>
+              <span class="duration-value" id="durationValue">1</span>
+              <div class="duration-btn increase">+</div>
+              <span class="duration-unit">
+                <span id="durationUnit">day</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="return-date-box">
+            <span class="return-date-label">Return by:</span>
+            <span id="returnDate" class="return-date-value">Select duration</span>
+          </div>
+          
+          <div class="order-row" id="discountRow" style="display: none; color: #4CAF50;">
+            <span>Discount:</span>
+            <span>-₹<span id="discountAmount">0</span></span>
+          </div>
+          
+          <div class="order-row total">
+            <span>Total Amount:</span>
+            <span>₹<span id="totalAmount">0</span></span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Side: Payment Form -->
+      <div class="payment-form">
+        <h2 class="payment-title">Payment Details</h2>
+        
+        <div class="payment-methods">
+          <div class="payment-method active">
+            <span class="payment-method-icon">💳</span>
+            <span>Credit Card</span>
+          </div>
+          <div class="payment-method">
+            <span class="payment-method-icon">💳</span>
+            <span>Debit Card</span>
+          </div>
+        </div>
+
+        <div class="card-icons">
+          <div class="card-icon visa">VISA</div>
+          <div class="card-icon mastercard">MC</div>
+          <div class="card-icon amex">AMEX</div>
+          <div class="card-icon rupay">RuPay</div>
+        </div>
+
+        <form id="paymentForm">
+          <input type="hidden" id="itemId">
+          <input type="hidden" id="rentalDuration" value="1">
+          
+          <div class="form-row">
+            <label for="cardholderName">Cardholder Name</label>
+            <input type="text" id="cardholderName" placeholder="Name on card" required>
+          </div>
+          
+          <div class="form-row">
+            <label for="cardNumber">Card Number</label>
+            <div class="card-input-wrapper">
+              <input type="text" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" required>
+              <span class="card-security-icon">🔒</span>
+            </div>
+          </div>
+          
+          <div class="card-details">
+            <div class="form-row card-expiry">
+              <label for="expiryDate">Expiry Date</label>
+              <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" required>
+            </div>
+            
+            <div class="form-row card-cvc">
+              <label for="cvv">CVV</label>
+              <input type="password" id="cvv" placeholder="XXX" maxlength="3" required>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn">
+            <span class="lock-icon">🔒</span>Pay ₹<span id="btnAmount">0</span>
+          </button>
+        </form>
+
+        <div class="pci-badge">
+          <span>🛡️</span>
+          <span>PCI DSS Compliant & Secure</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>© 2025 SecurePay</span>
+      <span>•</span>
+      <span>Privacy Policy</span>
+      <span>•</span>
+      <span>Terms of Service</span>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const itemId = urlParams.get("item_id");
+      const itemName = urlParams.get("item_name");
+      const itemPrice = urlParams.get("item_price") || "0";
+      
+      document.getElementById("itemId").value = itemId;
+      document.getElementById("itemName").textContent = itemName || "Unknown Item";
+      document.getElementById("itemPrice").textContent = itemPrice;
+      
+      updateTotalAmount();
+    
+      // Format card number with spaces
+      const cardInput = document.getElementById("cardNumber");
+      cardInput.addEventListener("input", function(e) {
+        let value = e.target.value.replace(/\D/g, "");
+        let formattedValue = "";
+        for (let i = 0; i < value.length; i++) {
+          if (i > 0 && i % 4 === 0) {
+            formattedValue += " ";
+          }
+          formattedValue += value[i];
+        }
+        e.target.value = formattedValue;
+      });
+    
+      // Format expiry date
+      const expiryInput = document.getElementById("expiryDate");
+      expiryInput.addEventListener("input", function(e) {
+        let value = e.target.value.replace(/\D/g, "");
+        if (value.length > 2) {
+          e.target.value = value.substring(0, 2) + "/" + value.substring(2);
+        } else {
+          e.target.value = value;
+        }
+      });
+    
+      // Duration control handlers
+      const decreaseBtn = document.querySelector(".duration-btn.decrease");
+      const increaseBtn = document.querySelector(".duration-btn.increase");
+      const durationValue = document.getElementById("durationValue");
+      const durationUnit = document.getElementById("durationUnit");
+    
+      decreaseBtn.addEventListener("click", function() {
+        let currentValue = parseInt(durationValue.textContent);
+        if (currentValue > 1) {
+          durationValue.textContent = currentValue - 1;
+          document.getElementById("rentalDuration").value = currentValue - 1;
+          durationUnit.textContent = currentValue - 1 > 1 ? "days" : "day";
+          updateTotalAmount();
+          updateReturnDate();
+        }
+      });
+    
+      increaseBtn.addEventListener("click", function() {
+        let currentValue = parseInt(durationValue.textContent);
+        durationValue.textContent = currentValue + 1;
+        document.getElementById("rentalDuration").value = currentValue + 1;
+        durationUnit.textContent = currentValue + 1 > 1 ? "days" : "day";
+        updateTotalAmount();
+        updateReturnDate();
+      });
+    
+      // Duration package options
+      const durationOptions = document.querySelectorAll(".duration-option");
+      durationOptions.forEach(option => {
+        option.addEventListener("click", function() {
+          durationOptions.forEach(opt => opt.classList.remove("active"));
+          this.classList.add("active");
+    
+          const days = parseInt(this.getAttribute("data-days"));
+          durationValue.textContent = days;
+          document.getElementById("rentalDuration").value = days;
+          durationUnit.textContent = days > 1 ? "days" : "day";
+    
+          updateTotalAmount();
+          updateReturnDate();
+        });
+      });
+
+      updateReturnDate();
+    });
+    
+    function updateTotalAmount() {
+      const pricePerDay = parseFloat(document.getElementById("itemPrice").textContent);
+      const duration = parseInt(document.getElementById("durationValue").textContent);
+      const activeOption = document.querySelector(".duration-option.active");
+      const discount = parseFloat(activeOption.getAttribute("data-discount")) || 0;
+    
+      const subtotal = pricePerDay * duration;
+      const discountAmount = (subtotal * discount) / 100;
+      const totalAmount = subtotal - discountAmount;
+    
+      // Format to 2 decimal places
+      const formattedTotal = totalAmount.toFixed(2);
+      const formattedDiscount = discountAmount.toFixed(2);
+    
+      document.getElementById("totalAmount").textContent = formattedTotal;
+      document.getElementById("btnAmount").textContent = formattedTotal;
+    
+      const discountRow = document.getElementById("discountRow");
+      if (discount > 0) {
+        document.getElementById("discountAmount").textContent = formattedDiscount;
+        discountRow.style.display = "flex";
+      } else {
+        discountRow.style.display = "none";
+      }
+    }
+    
+    document.getElementById("paymentForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+      
+      const itemId = document.getElementById("itemId").value;
+      const duration = document.getElementById("rentalDuration").value;
+      const totalAmount = document.getElementById("totalAmount").textContent;
+      const submitBtn = document.querySelector(".btn");
+    
+      submitBtn.innerHTML = "Processing Payment...";
+      submitBtn.disabled = true;
+    
+      try {
+        const response = await fetch("/payment", { 
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            item_id: itemId, 
+            duration: duration, 
+            total_amount: totalAmount 
+          })
+        });
+    
+        const result = await response.json();
+        
+        if (result.success) {
+          alert(`Payment Successful! Item rented for ${duration} day${duration > 1 ? 's' : ''}.`);
+          window.location.href = "/dashboard";
+        } else {
+          alert(result.error || "Payment failed. Please try again.");
+          submitBtn.innerHTML = `<span class="lock-icon">🔒</span> Pay ₹<span id="btnAmount">${totalAmount}</span>`;
+          submitBtn.disabled = false;
+        }
+      } catch (error) {
+        alert("An error occurred. Please try again.");
+        submitBtn.innerHTML = `<span class="lock-icon">🔒</span> Pay ₹<span id="btnAmount">${totalAmount}</span>`;
+        submitBtn.disabled = false;
+      }
+    });
+    
+    // Make payment method selection work
+    document.querySelectorAll(".payment-method").forEach(method => {
+      method.addEventListener("click", function() {
+        document.querySelectorAll(".payment-method").forEach(m => {
+          m.classList.remove("active");
+        });
+        this.classList.add("active");
+      });
+    });
+
+    function updateReturnDate() {
+      let duration = parseInt(document.getElementById("durationValue").textContent);
+      let currentDate = new Date();
+      currentDate.setDate(currentDate.getDate() + duration);
+      
+      // Format as a more readable date (e.g., "Mar 20, 2025")
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      let formattedDate = currentDate.toLocaleDateString('en-US', options);
+      document.getElementById("returnDate").textContent = formattedDate;
+    }
+  </script>
+</body>
+</html>

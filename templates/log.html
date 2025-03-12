@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rentify - Item Rental Marketplace</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            overflow-x: hidden;
+        }
+        
+        .split-layout {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        .brand-side {
+            flex: 1;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('/api/placeholder/800/1000') center/cover;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .item-showcase {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            z-index: 1;
+        }
+        
+        .item-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            overflow: hidden;
+            width: 160px;
+            height: 220px;
+            margin: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transform: rotate(-5deg);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        
+        .item-card:nth-child(even) {
+            transform: rotate(3deg);
+        }
+        
+        .item-card:hover {
+            transform: scale(1.05) rotate(0);
+            z-index: 5;
+        }
+        
+        .item-image {
+            height: 140px;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .item-image i {
+            font-size: 50px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .item-info {
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .item-price {
+            color: #4CAF50;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        
+        .item-owner {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            margin-top: 4px;
+        }
+        
+        .item-owner i {
+            font-size: 0.7rem;
+            margin-right: 3px;
+        }
+        
+        .brand-content {
+            position: relative;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 30px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            width: 90%;
+            max-width: 500px;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        
+        .logo span {
+            color: #4CAF50;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            max-width: 90%;
+            margin: 0 auto 25px;
+            line-height: 1.6;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+            text-align: left;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature i {
+            font-size: 1.2rem;
+            color: #4CAF50;
+            min-width: 25px;
+            text-align: center;
+        }
+        
+        .form-side {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .form-header {
+            margin-bottom: 30px;
+        }
+        
+        .form-header h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        
+        .form-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+        
+        form {
+            display: none;
+            flex-direction: column;
+        }
+        
+        form.active {
+            display: flex;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.07);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5);
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+        
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .submit-btn {
+            padding: 15px;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .submit-btn:hover {
+            background: linear-gradient(90deg, #45a049, #409343);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(76, 175, 80, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .toggle-box {
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        .toggle-box button {
+            background: none;
+            border: none;
+            color: #4CAF50;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        
+        .toggle-box button:hover {
+            color: #45a049;
+            text-decoration: underline;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .divider span {
+            padding: 0 15px;
+            font-size: 0.85rem;
+        }
+        
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .social-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        
+        .social-btn i {
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .social-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .cta-button {
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .cta-primary {
+            background: #4CAF50;
+            color: white;
+            border: none;
+        }
+        
+        .cta-secondary {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .cta-primary:hover {
+            background: #45a049;
+        }
+        
+        .cta-secondary:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .split-layout {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .brand-side {
+                min-height: 450px;
+            }
+            
+            .brand-content {
+                margin-bottom: 0;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-side {
+                padding: 40px 20px;
+            }
+            
+            .item-card {
+                width: 120px;
+                height: 170px;
+                margin: 5px;
+            }
+            
+            .item-image {
+                height: 100px;
+            }
+            
+            .item-showcase {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .social-login {
+                flex-wrap: wrap;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="split-layout">
+        <div class="brand-side">
+            <div class="item-showcase">
+                <div class="item-card">
+                    <div class="item-image">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">DSLR Camera</div>
+                        <div class="item-price">$15/day</div>
+                        <div class="item-owner"><i class="fas fa-user-circle"></i> Mike G.</div>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <div class="item-image">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">MacBook Pro</div>
+                        <div class="item-price">$30/day</div>
+                        <div class="item-owner"><i class="fas fa-user-circle"></i> Sarah L.</div>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <div class="item-image">
+                        <i class="fas fa-bicycle"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">Mountain Bike</div>
+                        <div class="item-price">$18/day</div>
+                        <div class="item-owner"><i class="fas fa-user-circle"></i> Jason T.</div>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <div class="item-image">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">Power Tools Set</div>
+                        <div class="item-price">$22/day</div>
+                        <div class="item-owner"><i class="fas fa-user-circle"></i> Robert K.</div>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <div class="item-image">
+                        <i class="fas fa-guitar"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">Acoustic Guitar</div>
+                        <div class="item-price">$10/day</div>
+                        <div class="item-owner"><i class="fas fa-user-circle"></i> Emma S.</div>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <div class="item-image">
+                        <i class="fas fa-drone"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">Drone 4K</div>
+                        <div class="item-price">$45/day</div>
+                        <div class="item-owner"><i class="fas fa-user-circle"></i> David M.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="brand-content">
+                <div class="logo">Rent<span>ify</span></div>
+                <p class="tagline">Rent anything you need. List items you rarely use. Create a sharing economy that benefits everyone.</p>
+                
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-search"></i>
+                        <span>Find items to rent nearby</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span>Earn from your idle items</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure payment processing</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-star"></i>
+                        <span>Verified user reviews</span>
+                    </div>
+                </div>
+                
+                <div class="cta-buttons">
+                    <button class="cta-button cta-primary">
+                        <i class="fas fa-search"></i> Browse Items
+                    </button>
+                    <button class="cta-button cta-secondary">
+                        <i class="fas fa-plus-circle"></i> List an Item
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-side">
+            <div class="container">
+                <div id="formContainer">
+                    <form id="loginForm" class="active">
+                        <div class="form-header">
+                            <h2>Welcome Back</h2>
+                            <p>Enter your credentials to access your account</p>
+                        </div>
+                        
+                        <div class="social-login">
+                            <div class="social-btn">
+                                <i class="fab fa-google"></i>
+                            </div>
+                            <div class="social-btn">
+                                <i class="fab fa-facebook-f"></i>
+                            </div>
+                            <div class="social-btn">
+                                <i class="fab fa-apple"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="divider">
+                            <span>OR LOGIN WITH EMAIL</span>
+                        </div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="loginEmail" placeholder="Email" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="loginPassword" placeholder="Password" required>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">Login</button>
+                        
+                        <div class="toggle-box">
+                            <button id="signupToggle">Don't have an account? <strong>Sign up</strong></button>
+                        </div>
+                    </form>
+                    
+                    <form id="signupForm">
+                        <div class="form-header">
+                            <h2>Create Account</h2>
+                            <p>Join Rentify to start renting or listing items</p>
+                        </div>
+                        
+                        <div class="social-login">
+                            <div class="social-btn">
+                                <i class="fab fa-google"></i>
+                            </div>
+                            <div class="social-btn">
+                                <i class="fab fa-facebook-f"></i>
+                            </div>
+                            <div class="social-btn">
+                                <i class="fab fa-apple"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="divider">
+                            <span>OR SIGNUP WITH EMAIL</span>
+                        </div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="signupName" placeholder="Full Name" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="signupEmail" placeholder="Email" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="signupPassword" placeholder="Password" required>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">Create Account</button>
+                        
+                        <div class="toggle-box">
+                            <button id="loginToggle">Already have an account? <strong>Login</strong></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            let email = document.getElementById("loginEmail").value;
+            let password = document.getElementById("loginPassword").value;
+            
+            fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                } else {
+                    alert(data.error || "Login failed");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+        
+        document.getElementById("signupForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            let name = document.getElementById("signupName").value;
+            let email = document.getElementById("signupEmail").value;
+            let password = document.getElementById("signupPassword").value;
+            
+            fetch("/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    document.getElementById("loginForm").classList.add("active");
+                    document.getElementById("signupForm").classList.remove("active");
+                } else {
+                    alert(data.error || "Signup failed");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+        
+        document.getElementById("signupToggle").addEventListener("click", function(event) {
+            event.preventDefault();
+            document.getElementById("loginForm").classList.remove("active");
+            document.getElementById("signupForm").classList.add("active");
+        });
+        
+        document.getElementById("loginToggle").addEventListener("click", function(event) {
+            event.preventDefault();
+            document.getElementById("signupForm").classList.remove("active");
+            document.getElementById("loginForm").classList.add("active");
+        });
+    </script>
+</body>
+</html>

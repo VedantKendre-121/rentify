@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Authentication</title>
+    <style>
+        :root {
+            /* Light theme variables */
+            --primary-color: #3f51b5;
+            --primary-hover: #303f9f;
+            --text-color: #333;
+            --background-color: #f8f9fa;
+            --card-background: white;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --error-color: #f44336;
+            --input-background: #ffffff;
+            --secondary-text: #757575;
+        }
+
+        [data-theme="dark"] {
+            /* Dark theme variables */
+            --primary-color: #5c6bc0;
+            --primary-hover: #7986cb;
+            --text-color: #e0e0e0;
+            --background-color: #121212;
+            --card-background: #1e1e1e;
+            --border-color: #333333;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --error-color: #ef5350;
+            --input-background: #2c2c2c;
+            --secondary-text: #b0b0b0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--background-color);
+            background-image: url('/api/placeholder/400/400');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .container {
+            background: var(--card-background);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            width: 380px;
+            max-width: 90%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--text-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .theme-icon {
+            background-color: var(--text-color);
+        }
+
+        .theme-icon::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background-color: var(--card-background);
+            border-radius: 50%;
+            transform: translate(25%, -25%);
+            display: block;
+        }
+
+        [data-theme="dark"] .theme-icon::after {
+            display: none;
+        }
+
+        h2 {
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border 0.3s ease;
+            background-color: var(--input-background);
+            color: var(--text-color);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .toggle-container {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--secondary-text);
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+
+        .toggle-btn:hover {
+            color: var(--primary-hover);
+        }
+
+        .form-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .form-title::before,
+        .form-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .form-title::before {
+            margin-right: 15px;
+        }
+
+        .form-title::after {
+            margin-left: 15px;
+        }
+        
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        
+        .decoration-shape {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .shape-1 {
+            top: -50px;
+            left: -50px;
+        }
+        
+        .shape-2 {
+            bottom: -30px;
+            right: -30px;
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <span class="theme-icon"></span>
+        </button>
+        <div class="decoration-shape shape-1"></div>
+        <div class="decoration-shape shape-2"></div>
+        <div class="logo-container">
+            <div class="logo">A</div>
+        </div>
+        <div class="form-title">
+            <h2 id="form-title">Admin Login</h2>
+        </div>
+        <form id="auth-form">
+            <div class="form-group" id="name-group" style="display: none;">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
+            <button type="submit" class="btn">Login</button>
+        </form>
+        <div class="toggle-container">
+            <p id="toggle-text">Don't have an account? <button class="toggle-btn" onclick="toggleForm()">Sign Up</button></p>
+        </div>
+    </div>
+
+    <script>
+        let isLogin = true;
+        
+        function toggleForm() {
+            isLogin = !isLogin;
+            document.getElementById("form-title").textContent = isLogin ? "Admin Login" : "Admin Signup";
+            document.getElementById("name-group").style.display = isLogin ? "none" : "block";
+            document.querySelector(".btn").textContent = isLogin ? "Login" : "Signup";
+            document.getElementById("toggle-text").innerHTML = isLogin 
+                ? "Don't have an account? <button class='toggle-btn' onclick='toggleForm()'>Sign Up</button>"
+                : "Already have an account? <button class='toggle-btn' onclick='toggleForm()'>Login</button>";
+        }
+        
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+        
+        // Load saved theme preference
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+        });
+
+        document.getElementById("auth-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            const formData = {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+            };
+
+            const url = isLogin ? "/admin/login" : "/admin/signup";
+
+            fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    alert(data.message);
+                    window.location.href = data.redirect;
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+</body>
+</html>

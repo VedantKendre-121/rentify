@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-tertiary: #0f3460;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #4361ee;
+            --accent-hover: #3a56d4;
+            --danger: #e94560;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --card-bg: #242444;
+            --border-color: #2c2c54;
+            --table-header: #242446;
+            --table-row-hover: rgba(67, 97, 238, 0.15);
+            --table-stripe: rgba(255, 255, 255, 0.03);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .admin-info {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .logout-btn {
+            display: block;
+            width: 120px;
+            padding: 10px 15px;
+            background: var(--danger);
+            color: white;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            margin: 15px auto;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logout-btn:hover {
+            background: #d13854;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Category slider styles */
+        .category-slider {
+            margin: 25px 0 20px 0;
+            position: relative;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .slider-container {
+            overflow-x: auto;
+            padding: 5px 0;
+            margin-bottom: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--bg-tertiary);
+        }
+        
+        .slider-container::-webkit-scrollbar {
+            height: 5px;
+        }
+        
+        .slider-container::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 5px;
+        }
+        
+        .slider-container::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 5px;
+        }
+        
+        .slider-tabs {
+            display: flex;
+            gap: 10px;
+            min-width: min-content;
+        }
+        
+        .category-tab {
+            padding: 12px 24px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-weight: 500;
+            color: var(--text-secondary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid transparent;
+        }
+        
+        .category-tab:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+        
+        .category-tab.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+        }
+        
+        /* Navigation arrows */
+        .nav-arrows {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .arrow {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            user-select: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+        
+        .arrow:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
+        }
+        
+        /* Category styles */
+        .category {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none; /* Hide by default */
+        }
+        
+        .category.active {
+            display: block; /* Show only active category */
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .category h2 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .category h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 18px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background: var(--table-header);
+            color: var(--text-primary);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            font-size: 0.95rem;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tr:nth-child(even) {
+            background-color: var(--table-stripe);
+        }
+        
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+        
+        tbody tr:hover {
+            background-color: var(--table-row-hover);
+        }
+        
+        /* Status indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-yes {
+            background-color: var(--success);
+            box-shadow: 0 0 5px rgba(46, 204, 113, 0.5);
+        }
+        
+        .status-no {
+            background-color: var(--warning);
+            box-shadow: 0 0 5px rgba(243, 156, 18, 0.5);
+        }
+        
+        .status-text {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+    <script>
+        // Keep original logout function
+        function logout() {
+            fetch('/admin/logout', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    window.location.href = data.redirect;
+                });
+        }
+        
+        // Add category slider functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all category elements
+            const categories = document.querySelectorAll('.category');
+            const categoryNames = Array.from(categories).map(cat => 
+                cat.querySelector('h2').textContent.trim()
+            );
+            
+            // Create slider container
+            const sliderContainer = document.createElement('div');
+            sliderContainer.className = 'category-slider';
+            
+            // Create tabs container
+            const sliderTabsContainer = document.createElement('div');
+            sliderTabsContainer.className = 'slider-container';
+            const sliderTabs = document.createElement('div');
+            sliderTabs.className = 'slider-tabs';
+            sliderTabsContainer.appendChild(sliderTabs);
+            
+            // Create tabs
+            categoryNames.forEach((name, index) => {
+                const tab = document.createElement('div');
+                tab.className = `category-tab ${index === 0 ? 'active' : ''}`;
+                tab.textContent = name;
+                tab.dataset.index = index;
+                sliderTabs.appendChild(tab);
+            });
+            
+            // Create navigation arrows
+            const navArrows = document.createElement('div');
+            navArrows.className = 'nav-arrows';
+            navArrows.innerHTML = `
+                <div class="arrow" id="prevCategory">&#10094;</div>
+                <div class="arrow" id="nextCategory">&#10095;</div>
+            `;
+            
+            // Add slider elements to container
+            sliderContainer.appendChild(sliderTabsContainer);
+            sliderContainer.appendChild(navArrows);
+            
+            // Add slider before first category
+            if (categories.length > 0) {
+                categories[0].parentNode.insertBefore(sliderContainer, categories[0]);
+            }
+            
+            // Set initial active category
+            categories.forEach((cat, index) => {
+                cat.classList.toggle('active', index === 0);
+            });
+            
+            // Tab click functionality
+            sliderTabs.addEventListener('click', function(e) {
+                if (e.target.classList.contains('category-tab')) {
+                    const index = parseInt(e.target.dataset.index);
+                    
+                    // Update active tab
+                    document.querySelectorAll('.category-tab').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    e.target.classList.add('active');
+                    
+                    // Update active category
+                    categories.forEach((cat, i) => {
+                        cat.classList.toggle('active', i === index);
+                    });
+                    
+                    // Scroll tab into view if needed
+                    e.target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }
+            });
+            
+            // Arrow navigation
+            const prevButton = document.getElementById('prevCategory');
+            const nextButton = document.getElementById('nextCategory');
+            
+            prevButton.addEventListener('click', function() {
+                const activeTab = document.querySelector('.category-tab.active');
+                const activeIndex = parseInt(activeTab.dataset.index);
+                const prevIndex = activeIndex > 0 ? activeIndex - 1 : categoryNames.length - 1;
+                
+                const tabs = document.querySelectorAll('.category-tab');
+                tabs[prevIndex].click();
+            });
+            
+            nextButton.addEventListener('click', function() {
+                const activeTab = document.querySelector('.category-tab.active');
+                const activeIndex = parseInt(activeTab.dataset.index);
+                const nextIndex = activeIndex < categoryNames.length - 1 ? activeIndex + 1 : 0;
+                
+                const tabs = document.querySelectorAll('.category-tab');
+                tabs[nextIndex].click();
+            });
+            
+            // Enhance the status display with icons
+            document.querySelectorAll('table tr').forEach(row => {
+                if (row.querySelector('td:nth-child(3)')) {
+                    const statusCell = row.querySelector('td:nth-child(3)');
+                    const status = statusCell.textContent.trim();
+                    
+                    if (status === "Yes" || status === "No") {
+                        const isRented = status === "Yes";
+                        statusCell.innerHTML = `
+                            <div class="status-text">
+                                <span class="status-indicator status-${status.toLowerCase()}"></span>
+                                ${status}
+                            </div>
+                        `;
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <p class="admin-info">Welcome, {{ admin_name }}</p>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+        
+        {% for category, items in categorized_items.items() %}
+        <div class="category">
+            <h2>{{ category }}</h2>
+            <table>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Listed Date</th>
+                    <th>Rented</th>
+                    <th>Listed By</th>
+                    <th>Rented By</th>
+                </tr>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.listed_date }}</td>
+                    <td>{{ "Yes" if item.rented else "No" }}</td>
+                    <td>{{ item.user_name }}</td> 
+                    <td>{{ item.renter_name if item.renter_name else "Not Rented" }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

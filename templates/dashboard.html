@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Rentify</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #9ca3af;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --body-bg: #1f2937;
+            --card-bg: #111827;
+            --text-primary: #f3f4f6;
+            --text-secondary: #d1d5db;
+            --border-radius: 0.5rem;
+            --border-color: #374151;
+        }
+        
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        
+        .navbar {
+            background-color: var(--card-bg) !important;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+        
+        .active-link {
+            color: var(--primary-color) !important;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .dashboard-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+        
+        .section-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-header i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-img-container {
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+            background-color: #0f172a;
+        }
+        
+        .card-img-top {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .card-body {
+            padding: 1.25rem;
+        }
+        
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .card-price {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        .card-category {
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+        }
+        
+        .badge {
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 50px;
+        }
+        
+        .badge-available {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: var(--success-color);
+        }
+        
+        .badge-rented {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger-color);
+        }
+        
+        .badge-pending {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning-color);
+        }
+        
+        .no-items {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            color: var(--secondary-color);
+        }
+        
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+        
+        .user-welcome {
+            font-weight: 300;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--secondary-color);
+            background-color: rgba(17, 24, 39, 0.7);
+            border-radius: var(--border-radius);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #3b5bdb;
+            border-color: #3b5bdb;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-outline-secondary {
+            color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: transparent;
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+        
+        .list-group-item {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border-color: var(--border-color);
+        }
+        
+        footer {
+            background-color: var(--card-bg) !important;
+            color: var(--text-secondary);
+        }
+        
+        .text-muted {
+            color: var(--secondary-color) !important;
+        }
+        
+        .navbar-toggler {
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .navbar-toggler-icon {
+            filter: invert(1);
+        }
+        
+        @media (max-width: 768px) {
+            .card-img-container {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">Rentify</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active-link" href="/dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/rent">
+                            <i class="fas fa-plus-circle me-1"></i>List New Item
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <a class="nav-link" href="/">
+                        <i class="fas fa-home me-1"></i>Home
+                    </a>
+                    <a class="nav-link" href="#" onclick="logoutUser()">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </a>
+                    <div class="avatar">{{ user_name[0] }}</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <div class="dashboard-header">
+            <div class="user-welcome">Welcome back, <span class="user-name">{{ user_name }}</span></div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="section-header">
+                    <i class="fas fa-list"></i> Your Listed Items
+                </div>
+                
+                <div class="row">
+                    {% if listed_items %}
+                        {% for item in listed_items %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card">
+                                    <div class="card-img-container">
+                                        <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.name }}">
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ item.name }}</h5>
+                                        <div class="card-meta">
+                                            <div class="card-price">₹{{ item.price }}</div>
+                                            <div class="card-category">{{ item.category }}</div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge {{ 'badge-rented' if item.rented else 'badge-available' }}">
+                                                {{ 'Rented' if item.rented else 'Available' }}
+                                            </span>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12">
+                            <div class="empty-state">
+                                <i class="fas fa-box-open"></i>
+                                <p>You haven't listed any items yet</p>
+                                <a href="/rent" class="btn btn-primary">List Your First Item</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="section-header mt-5">
+                    <i class="fas fa-hand-holding-usd"></i> Items You've Rented
+                </div>
+                
+                <div class="row">
+                    {% if rented_items %}
+                        {% for item in rented_items %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card">
+                                    <div class="card-img-container">
+                                        <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.name }}">
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ item.name }}</h5>
+                                        <div class="card-meta">
+                                            <div class="card-price">₹{{ item.price }}</div>
+                                            <div class="card-category">{{ item.category }}</div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge badge-pending">{{ item.status }}</span>
+                                            <a href="/rental-details/{{ item.id }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-info-circle"></i> Details
+                                            </a>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12">
+                            <div class="empty-state">
+                                <i class="fas fa-shopping-bag"></i>
+                                <p>You haven't rented any items yet</p>
+                                <a href="/rent" class="btn btn-primary">Find Items to Rent</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mt-4 mt-lg-0">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-chart-line text-primary me-2"></i>Rental Statistics
+                        </h5>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Active listings</span>
+                            <span class="badge badge-available">{{ listed_items|selectattr('rented', 'equalto', false)|list|length }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Rented out</span>
+                            <span class="badge badge-rented">{{ listed_items|selectattr('rented', 'equalto', true)|list|length }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Items you're renting</span>
+                            <span class="badge badge-pending">{{ rented_items|length }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-lightbulb text-warning me-2"></i>Quick Tips
+                        </h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item border-0 ps-0">
+                                <i class="fas fa-camera text-success me-2"></i>
+                                Clear photos increase rental chances by 80%
+                            </li>
+                            <li class="list-group-item border-0 ps-0">
+                                <i class="fas fa-tag text-success me-2"></i>
+                                Competitive pricing helps rent items faster
+                            </li>
+                            <li class="list-group-item border-0 ps-0">
+                                <i class="fas fa-star text-success me-2"></i>
+                                Detailed descriptions improve visibility
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="mt-5 py-4">
+        <div class="container text-center">
+            <p class="text-muted mb-0">&copy; 2025 Rentify. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function logoutUser() {
+            fetch('/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+
+</body>
+</html>
